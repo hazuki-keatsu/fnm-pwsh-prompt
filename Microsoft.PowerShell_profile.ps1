@@ -1,3 +1,5 @@
+# 适用于 fnm 和 git 的 Powershell 双栏 Prompt
+
 fnm env --use-on-cd --shell powershell | Out-String | Invoke-Expression
 
 function Get-FnmVersionInfo {
@@ -30,15 +32,49 @@ function Get-FnmVersionInfo {
     return "${colorFnm}[fnm: ${colorVersion}$fnmCurrent${colorFnm}]${colorReset} "
 }
 
+function Get-GitBranchInfo {
+    # 定义颜色代码
+    $colorGit = "`e[38;5;161m"  # 粉红色
+    $colorBranch = "`e[38;5;208m" # 橙色
+    $colorReset = "`e[0m"       # 重置颜色
+
+    # 检查是否在Git仓库中
+    if (-not (Test-Path .git)) {
+        return ""
+    }
+
+    # 获取当前Git分支
+    try {
+        $branch = git rev-parse --abbrev-ref HEAD 2>$null
+        if ($LASTEXITCODE -ne 0 -or -not $branch) {
+            return ""
+        }
+        
+        # 检查工作区是否有未提交的更改
+        $status = git status --porcelain 2>$null
+        $hasChanges = ($status -ne $null)
+        
+        # 添加星号表示有未提交的更改
+        $changeIndicator = if ($hasChanges) { "*" } else { "" }
+        
+        return "${colorGit}[git: ${colorBranch}$branch$changeIndicator${colorGit}]${colorReset} "
+    }
+    catch {
+        return ""
+    }
+}
+
 function prompt {
     $colorPath = "`e[38;5;141m"  # 紫色
     $colorPrompt = "`e[38;5;255m" # 白色
     $colorReset = "`e[0m"        # 重置颜色
     
     $fnmInfo = Get-FnmVersionInfo
-    $currentDir = $PWD.Path.Replace($HOME, "~")
+    $gitInfo = Get-GitBranchInfo
+    # $currentDir = $PWD.Path.Replace($HOME, "~")  # 可选：用~代替用户目录
+    $currentDir = $PWD.Path
     
-    "${fnmInfo}${colorPath}$currentDir ${colorPrompt}>${colorReset} "
+    "${colorPrompt}┌─${fnmInfo}${gitInfo}${colorPath}$currentDir ${colorPrompt} `n└─`$${colorReset} "
 }
 
 # 确保PowerShell支持ANSI转义序列
@@ -48,3 +84,6 @@ if ($Host.UI.RawUI.ForegroundColor -ne $null) {
 }
 $OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding
 $env:TERM = "xterm-256color"
+
+# 启用ANSI颜色支持
+Set-ItemProperty HKCU:\Console VirtualTerminalLevel -Type DWORD 1

@@ -1,17 +1,21 @@
 # fnm-pwsh-prompt
 
-## Introduction
+中文 | [English](./README_en.md)
 
-This is a config script for PowerShell when you use fnm. It can display the version, the alias clearly in the prompt.
+## 介绍
 
-这是一个适用于 [fnm](https://github.com/Schniz/fnm) 的 PowerShell 的配置文件，它可以在提示词中清晰地展示当前版本、别名。
+这是一个适用于 [fnm](https://github.com/Schniz/fnm) 和 [git](https://git-scm.com/) 的 PowerShell 的配置文件，它可以在提示词中清晰地展示 [node.js](https://nodejs.org/zh-cn) 当前版本和别名以及展示当前仓库的 [git](https://git-scm.com/) 分支信息。
 
-## Preview
+同时，相比于默认的版本，这个配置文件是双栏的配置，不会由于过长的路径名而导致命令输入空间的缩短。
 
-![Preview Image](./preview_image.png)
+## 预览
 
-## Usage
+![预览图片](./preview_image.png)
 
-Append the content of [Microsoft.PowerShell_profile.ps1](./Microsoft.PowerShell_profile.ps1) into the profile of PowerShell.
+## 使用
 
-在 PowerShell 的配置文件中追加 [Microsoft.PowerShell_profile.ps1](./Microsoft.PowerShell_profile.ps1) 中的脚本即可。
+首先，打开你当前的 PowerShell 配置文件。
+
+在 PowerShell 中输入 `notepad $profile`
+
+接着，在你的 PowerShell 的配置文件中合适的位置追加 [Microsoft.PowerShell_profile.ps1](./Microsoft.PowerShell_profile.ps1) 中的脚本即可。
